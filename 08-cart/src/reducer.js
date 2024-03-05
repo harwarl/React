@@ -1,5 +1,5 @@
 export const reducer = (state, action) => {
-  let newCart, newItem, item;
+  let newItem, item, newCart, itemId;
   switch (action.type) {
     case 'CLEAR_CART':
       return { ...state, cart: new Map() };
@@ -9,15 +9,21 @@ export const reducer = (state, action) => {
       return { ...state, cart: newCart };
     case 'INCREASE':
       newCart = new Map(state.cart);
-      item = newCart.get(action.payload.id);
+      itemId = action.payload.id;
+      item = newCart.get(itemId);
       newItem = { ...item, amount: item.amount + 1 };
-      newCart.set(action.payload.id, newItem);
+      newCart.set(itemId, newItem);
       return { ...state, cart: newCart };
     case 'DECREASE':
       newCart = new Map(state.cart);
-      item = newCart.get(action.payload.id);
+      itemId = action.payload.id;
+      item = newCart.get(itemId);
+      if (item.amount === 1) {
+        newCart.delete(itemId);
+        return { ...state, cart: newCart };
+      }
       newItem = { ...item, amount: item.amount - 1 };
-      newCart.set(action.payload.id, newItem);
+      newCart.set(itemId, newItem);
       return { ...state, cart: newCart };
     case 'LOADING':
       return { ...state, loading: true };
@@ -28,5 +34,3 @@ export const reducer = (state, action) => {
       throw new Error(`no matching action type : ${action.type}`);
   }
 };
-
-
